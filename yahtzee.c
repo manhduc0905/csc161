@@ -25,8 +25,8 @@ void reArrange(int *arr, int len, int *choices, int len_choices) {
   for (int i = 0; i < len_choices; i++) {
     arr[choices[i] - 1] = 0;
   }
+  printf("\nRemoved dices: ");
   printArr(arr, len);
-  printf("\n");
   
   int shift = 0;
   for (int i = 0; i < len; i++) {
@@ -37,7 +37,9 @@ void reArrange(int *arr, int len, int *choices, int len_choices) {
   for (int i = shift; i < len; i++) {
     arr[i] = rollDice();
   }
+  printf("\nNew set of dices: ");
   printArr(arr, len);
+  printf("\n");
 }
 
 void reRoll(int *arr, int len, int *remaining_rolls) {
@@ -69,6 +71,8 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
     case 1:
       *remaining_rolls -= 5;
       initialization(arr, 0, len);
+      printf("New set of dices: ");
+      printArr(arr, len);
       break;
     case 2:
       return;
@@ -77,6 +81,7 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
       while (1) {
         int valid = scanf("%d", &count);
         if (valid != 1 || valid < 1 || valid > 5) {
+          scanf("%*s");
           printf("Invalid option. Please choose again: ");
           continue;
         }
@@ -89,24 +94,25 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
       int valid_sequence;
       do {
           valid_sequence = 1;
-          printf("Please type in a sequence of %d numbers (1-5): ", count);
+          printf("Please type %d numbers:\n", count);
 
           for (int i = 0; i < count; i++) {
+              printf("Dice at position?: ");
               scanf("%d", &choices[i]);
-
               if (choices[i] < 1 || choices[i] > 5) {
                   printf("Invalid number at position %d: %d\n", i+1, choices[i]);
                   valid_sequence = 0;
+                  scanf("%*s");
                   break; 
               }
           }
       } while (!valid_sequence);
       *remaining_rolls -= count;
+      reArrange(arr, 5, choices, count);
       break;
     default:
       return;
   }
-  reArrange(arr, 5, choices, count);
 }
 
 bool valid_scoreline(int *score_sheet, int len, int option) {
@@ -114,6 +120,7 @@ bool valid_scoreline(int *score_sheet, int len, int option) {
 }
 
 void scoreboard(int *score_sheet) {
+  printf("\nCurrent Scoreboard:\n");
   for (int i = 0; i < 6; i++) {
     if (score_sheet[i] != -1) {
       printf("%d: %d\n", i+1, score_sheet[i]);
@@ -155,6 +162,7 @@ int main() {
         int valid = scanf("%d", &option);
         if (valid != 1 || valid < 1 || valid > 2) {
           printf("\nInvalid option. Please choose again: ");
+          scanf("%*s");
           continue;
         }
         break;
@@ -175,6 +183,7 @@ int main() {
           int valid = scanf("%d", &option);
           if (valid != 1 || option < 1 || option > 6 || !valid_scoreline(score_sheet, 6, option)) {
             printf("\nInvalid option. Please choose again: ");
+            scanf("%*s");
             continue;
           }
           break;
@@ -185,5 +194,11 @@ int main() {
       }
     }
   } 
+  //total score:
+  int total_score = 0;
+  for (int i = 0; i < 5; i++) {
+    total_score += score_sheet[i];
+  }
+  printf("Congratulations! You scored: %d\n", total_score);
   return 0;
 }
