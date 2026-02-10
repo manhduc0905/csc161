@@ -9,18 +9,21 @@ int rollDice(void) {
   return number % 6 + 1;
 }
 
+// fills the array from index start to end with random dice values
 void initialization(int *arr, int start, int end) {
   for (int i = start; i < end; i++) {
     arr[i] = rollDice();
   }
 }
 
+// prints all elements of the array
 void printArr(int *arr, int len) {
   for (int i = 0; i < len; i++) {
     printf("%d ", arr[i]);
   }
 }
 
+// removes selected dice, shifts remaining values left, and rerolls new dice
 void reArrange(int *arr, int len, int *choices, int len_choices) {
   for (int i = 0; i < len_choices; i++) {
     arr[choices[i] - 1] = 0;
@@ -42,6 +45,7 @@ void reArrange(int *arr, int len, int *choices, int len_choices) {
   printf("\n");
 }
 
+// handles reroll logic based on user choice and remaining rolls
 void reRoll(int *arr, int len, int *remaining_rolls) {
   printf("\nReroll options: \n");
   if (*remaining_rolls == len) {
@@ -115,10 +119,12 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
   }
 }
 
+// checks if the chosen scoreline is still available
 bool valid_scoreline(int *score_sheet, int len, int option) {
   return (score_sheet[option - 1] == -1);
 }
 
+// displays the current scoreboard with defined and undefined scores
 void scoreboard(int *score_sheet) {
   printf("\nCurrent Scoreboard:\n");
   for (int i = 0; i < 6; i++) {
@@ -131,6 +137,7 @@ void scoreboard(int *score_sheet) {
   }
 }
 
+// calculates the score for the chosen number and updates the scoreboard
 void update_scoreboard(int *dices, int len, int *score_sheet, int option) {
   int sum = 0;
   for (int i = 0; i < len; i++) {
