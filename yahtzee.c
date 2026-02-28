@@ -1,3 +1,4 @@
+//Name: Duc Tran
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -57,11 +58,10 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
   int option;
   while (1) {
     int valid = scanf("%d", &option);
-    if (valid != 1 || valid < 1 || valid > 3) {
+    if (valid != 1 || option < 1 || option > 3) {
       printf("Invalid option. Please choose again: ");
       continue;
-    }
-    else if (*remaining_rolls < 5 && option == 1) {
+    } else if (*remaining_rolls < 5 && option == 1) {
       printf("You don't have enough rolls for this. Please choose again: ");
       continue;
     }
@@ -84,12 +84,11 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
       printf("How many dice do you want to change? ");
       while (1) {
         int valid = scanf("%d", &count);
-        if (valid != 1 || valid < 1 || valid > 5) {
+        if (valid != 1 || count < 1 || count > 5) {
           scanf("%*s");
           printf("Invalid option. Please choose again: ");
           continue;
-        }
-        else if (count > *remaining_rolls) {
+        } else if (count > *remaining_rolls) {
           printf("You don't have enough rolls for this. Please choose again: ");
           continue;
         }
@@ -102,8 +101,13 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
 
           for (int i = 0; i < count; i++) {
               printf("Dice at position?: ");
-              scanf("%d", &choices[i]);
-              if (choices[i] < 1 || choices[i] > 5) {
+
+              if (scanf("%d", &choices[i]) != 1) {
+                printf("Invalid input. Please enter a number.\n");
+                valid_sequence = 0;
+                while (getchar() != '\n');   
+                break;
+              } else if (choices[i] < 1 || choices[i] > 5) {
                   printf("Invalid number at position %d: %d\n", i+1, choices[i]);
                   valid_sequence = 0;
                   scanf("%*s");
@@ -130,8 +134,7 @@ void scoreboard(int *score_sheet) {
   for (int i = 0; i < 6; i++) {
     if (score_sheet[i] != -1) {
       printf("%d: %d\n", i+1, score_sheet[i]);
-    }
-    else {
+    } else {
       printf("%d: Undefined\n", i+1);
     }
   }
@@ -167,7 +170,7 @@ int main() {
       int option;
       while (1) {
         int valid = scanf("%d", &option);
-        if (valid != 1 || valid < 1 || valid > 2) {
+        if (valid != 1 || option < 1 || option > 2) {
           printf("\nInvalid option. Please choose again: ");
           scanf("%*s");
           continue;
@@ -176,8 +179,7 @@ int main() {
       }
       if (option == 1) {
         reRoll(dices, 5, &remaining_rolls);
-      }
-      else {
+      } else {
         scoreboard(score_sheet);
         printf("Available score sheet: ");
         for (int i = 0; i < 6; i++) {
@@ -203,7 +205,7 @@ int main() {
   } 
   //total score:
   int total_score = 0;
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i <6; i++) {
     total_score += score_sheet[i];
   }
   printf("Congratulations! You scored: %d\n", total_score);
