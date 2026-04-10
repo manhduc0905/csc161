@@ -26,6 +26,7 @@ void printArr(int *arr, int len) {
 
 // removes selected dice, shifts remaining values left, and rerolls new dice
 void reArrange(int *arr, int len, int *choices, int len_choices) {
+  // mark the selected dice for removal by setting them to 0
   for (int i = 0; i < len_choices; i++) {
     arr[choices[i] - 1] = 0;
   }
@@ -33,15 +34,18 @@ void reArrange(int *arr, int len, int *choices, int len_choices) {
   printArr(arr, len);
   
   int shift = 0;
+  // shift non-zero values to the left and fill the rest with new dice rolls
   for (int i = 0; i < len; i++) {
     if (arr[i] != 0) {
       arr[shift++] = arr[i];
     }
   }
+  // fill the remaining positions with new dice rolls
   for (int i = shift; i < len; i++) {
     arr[i] = rollDice();
   }
   printf("\nNew set of dices: ");
+  // print the new set of dice 
   printArr(arr, len);
   printf("\n");
 }
@@ -56,6 +60,7 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
   printf("3. Choose a subset less than %d numbers\n", *remaining_rolls);
   printf("Your choice: ");
   int option;
+  // validate user input for reroll options
   while (1) {
     int valid = scanf("%d", &option);
     if (valid != 1 || option < 1 || option > 3) {
@@ -70,7 +75,7 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
   printf("\n");
   int choices[5] = {0, 0, 0, 0, 0};
   int count = 0;
-
+  // execute the reroll based on the user's choice
   switch(option){
     case 1:
       *remaining_rolls -= 5;
@@ -81,24 +86,31 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
     case 2:
       return;
     case 3: 
+      if (*remaining_rolls == 0) {
+        printf("You don't have any rolls left. Please choose again: ");
+        return;
+      }
+
       printf("How many dice do you want to change? ");
+      // validate the user's input for how many dice to reroll
       while (1) {
         int valid = scanf("%d", &count);
+        while (getchar() != '\n');
         if (valid != 1 || count < 1 || count > 5) {
-          scanf("%*s");
           printf("Invalid option. Please choose again: ");
           continue;
         } else if (count > *remaining_rolls) {
           printf("You don't have enough rolls for this. Please choose again: ");
           continue;
-        }
+        } 
         break;
       }
       int valid_sequence;
+      // validate the user's input for which dice to reroll
       do {
           valid_sequence = 1;
           printf("Please type %d numbers:\n", count);
-
+          // read the positions of the dice to reroll
           for (int i = 0; i < count; i++) {
               printf("Dice at position?: ");
 
@@ -110,7 +122,7 @@ void reRoll(int *arr, int len, int *remaining_rolls) {
               } else if (choices[i] < 1 || choices[i] > 5) {
                   printf("Invalid number at position %d: %d\n", i+1, choices[i]);
                   valid_sequence = 0;
-                  scanf("%*s");
+                  while (getchar() != '\n');
                   break; 
               }
           }
@@ -131,6 +143,7 @@ bool valid_scoreline(int *score_sheet, int len, int option) {
 // displays the current scoreboard with defined and undefined scores
 void scoreboard(int *score_sheet) {
   printf("\nCurrent Scoreboard:\n");
+  // print the current scores for each number, showing "Undefined" for those not yet scored
   for (int i = 0; i < 6; i++) {
     if (score_sheet[i] != -1) {
       printf("%d: %d\n", i+1, score_sheet[i]);
@@ -143,6 +156,7 @@ void scoreboard(int *score_sheet) {
 // calculates the score for the chosen number and updates the scoreboard
 void update_scoreboard(int *dices, int len, int *score_sheet, int option) {
   int sum = 0;
+  // sum up the values of the dice that match the chosen number
   for (int i = 0; i < len; i++) {
     if (dices[i] == option) {
       sum += dices[i];
@@ -153,14 +167,17 @@ void update_scoreboard(int *dices, int len, int *score_sheet, int option) {
 
 int main() {
   srand(time(NULL));
+  // initialize the dice array and the score sheet, where -1 indicates an unscored line
   int dices[5] = {0, 0, 0, 0, 0};
   int score_sheet[6] = {-1, -1, -1, -1, -1, -1};
+  // main game loop for 6 rounds, allowing the player to roll and score each round
   for (int i = 0; i < 6; i ++) {
     printf("\nAttempt %d\n", i + 1);
     int remaining_rolls = 5;
     printf("First roll: ");
     initialization(dices, 0, 5);    
     printArr(dices, 5);
+    // allow the player to reroll up to 2 times, or choose to score after the first roll
     while (1) {
       printf("\nReroll?\n");
       printf("Remaining roll = %d\n", remaining_rolls);
@@ -168,18 +185,19 @@ int main() {
       printf("2. No\n");
       printf("Your choice: ");
       int option;
+      // validate user input 
       while (1) {
         int valid = scanf("%d", &option);
         if (valid != 1 || option < 1 || option > 2) {
           printf("\nInvalid option. Please choose again: ");
-          scanf("%*s");
+          while (getchar() != '\n');
           continue;
         }
         break;
       }
-      if (option == 1) {
+      if (option == 1) {  // if the player chooses to reroll, reroll; 
         reRoll(dices, 5, &remaining_rolls);
-      } else {
+      } else {        // otherwise, proceed to scoring
         scoreboard(score_sheet);
         printf("Available score sheet: ");
         for (int i = 0; i < 6; i++) {
@@ -188,15 +206,17 @@ int main() {
           }
         }
         printf("\nChoose a scoreline: ");
+        // validate the user's input for scoring options, ensuring they choose an available scoreline
         while (1) {
           int valid = scanf("%d", &option);
+          while (getchar() != '\n');
           if (valid != 1 || option < 1 || option > 6 || !valid_scoreline(score_sheet, 6, option)) {
             printf("\nInvalid option. Please choose again: ");
-            scanf("%*s");
             continue;
           }
           break;
         }
+        // calculate and update the score for the chosen scoreline
         update_scoreboard(dices, 5, score_sheet, option);
         scoreboard(score_sheet);
         break;
@@ -205,6 +225,7 @@ int main() {
   } 
   //total score:
   int total_score = 0;
+  // sum up the scores from all scored lines to calculate the total score
   for (int i = 0; i <6; i++) {
     total_score += score_sheet[i];
   }
